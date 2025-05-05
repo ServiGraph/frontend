@@ -5,26 +5,30 @@ import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
 const NetworkGraph = () => {
+    // Refs and state management
     const svgRef = useRef();
     const tooltipRef = useRef();
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState({ heading: '', data: null });
-    const [selectedMinutes, setSelectedMinutes] = useState(5); // default to 5 min
-    const [fromTime, setFromTime] = useState(null); // for displaying the "from time"
+    const [selectedMinutes, setSelectedMinutes] = useState(5);
+    const [fromTime, setFromTime] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Graph dimensions
     const width = 1200;
     const height = 600;
 
+    // Main function to get data and render the graph
     const fetchAndRenderGraph = async () => {
         setIsLoading(true);
         const now = Math.floor(Date.now() / 1000);
         const fromTimestamp = now - selectedMinutes * 60;
-        setFromTime(new Date(fromTimestamp * 1000)); // Set the "from time"
+        setFromTime(new Date(fromTimestamp * 1000));
 
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
 
+        // Setup tooltip for hover info
         const tooltip = d3.select(tooltipRef.current)
             .style('position', 'absolute')
             .style('visibility', 'hidden')
@@ -35,52 +39,22 @@ const NetworkGraph = () => {
             .style('pointer-events', 'none');
 
         try {
-            console.log(fromTimestamp);
-            // 🟡 Call your API here
+            // Get trace data from API
             const response = await fetch(`http://127.0.0.1:8090/v1/fetchTraceData/${fromTimestamp}`);
             const json = await response.json();
 
-            // const json = {
-            //     nodes: [
-            //         { id: "Node A" },
-            //         { id: "Node B" },
-            //         { id: "Node C" },
-            //         { id: "Node D" },
-            //         { id: "Node E" },
-            //         { id: "Node F" },
-            //         { id: "Node G" },
-            //         { id: "Node H" },
-            //         { id: "Node I" },
-            //         { id: "Node J" }
-            //     ],
-            //     links: [
-            //         { source: "Node A", target: "Node B", weight: 3 },
-            //         { source: "Node A", target: "Node C", weight: 5 },
-            //         { source: "Node B", target: "Node D", weight: 2 },
-            //         { source: "Node C", target: "Node D", weight: 4 },
-            //         { source: "Node D", target: "Node E", weight: 1 },
-            //         { source: "Node E", target: "Node F", weight: 6 },
-            //         { source: "Node F", target: "Node G", weight: 2 },
-            //         { source: "Node G", target: "Node H", weight: 3 },
-            //         { source: "Node H", target: "Node I", weight: 7 },
-            //         { source: "Node I", target: "Node J", weight: 1 },
-            //         { source: "Node J", target: "Node A", weight: 2 },
-            //         { source: "Node B", target: "Node H", weight: 4 },
-            //         { source: "Node G", target: "Node F", weight: 4 }
-            //     ]
-            // };
-
-            // Inject default weights just for force layout
+            // Make sure links have weights
             json.links.forEach(link => {
                 link.weight = link.data !== null ? link.data : 1;
             });
 
             const data = json;
 
+            // Setup SVG container
             svg.attr('width', '100%').attr('height', '600px')
                 .attr('viewBox', `0 0 ${width} ${height}`);
 
-            // Arrowhead marker
+            // Add arrow markers for the links
             svg.append('defs').selectAll('marker')
                 .data(['end'])
                 .enter().append('marker')
@@ -97,11 +71,13 @@ const NetworkGraph = () => {
                 .attr('stroke', '#333')
                 .attr('stroke-width', 0.3);
 
+            // Setup force simulation
             const simulation = d3.forceSimulation(data.nodes)
                 .force('link', d3.forceLink(data.links).id(d => d.id).distance(200))
                 .force('charge', d3.forceManyBody().strength(-500))
                 .force('center', d3.forceCenter(width / 2, height / 2));
 
+            // Create the links
             const link = svg.append('g')
                 .selectAll('line')
                 .data(data.links)
@@ -110,6 +86,7 @@ const NetworkGraph = () => {
                 .attr('stroke-width', 4)
                 .attr('marker-end', 'url(#arrowhead)');
 
+            // Create the nodes
             const node = svg.append('g')
                 .selectAll('g')
                 .data(data.nodes)
@@ -120,12 +97,15 @@ const NetworkGraph = () => {
                 .attr('fill', '#69b3a2')
                 .call(drag(simulation));
 
+            // Add labels to nodes
             node.append('text')
                 .attr('dy', -30)
                 .attr('text-anchor', 'middle')
                 .text(d => d.id);
 
+            // Update positions on each tick
             simulation.on('tick', () => {
+                // Keep nodes within bounds
                 const topSafeZone = 50;
                 const padding = 20;
 
@@ -157,6 +137,7 @@ const NetworkGraph = () => {
                 node.attr('transform', d => `translate(${d.x},${d.y})`);
             });
 
+            // Link interactions
             link
                 .on('mouseover', function (event, d) {
                     d3.select(this)
@@ -191,6 +172,7 @@ const NetworkGraph = () => {
                     setModalIsOpen(true);
                 });
 
+            // Node interactions
             node
                 .on('mouseover', function (event, d) {
                     tooltip.style('visibility', 'visible').text(d.id);
@@ -204,6 +186,7 @@ const NetworkGraph = () => {
                     tooltip.style('visibility', 'hidden');
                 });
 
+            // Drag handler for nodes
             function drag(simulation) {
                 function dragstarted(event, d) {
                     if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -234,10 +217,10 @@ const NetworkGraph = () => {
         }
     };
 
-    // Initial fetch when component mounts
+    // Initial data fetch on component mount
     useEffect(() => {
         fetchAndRenderGraph();
-    }, []); // Only run on mount, not when selectedMinutes changes
+    }, []);
 
     return (
         <div>

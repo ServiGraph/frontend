@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import NetworkGraph from './NetworkGraph';
-import SankeyGraph from './SankeyGraph';
+import NetworkGraph from './components/NetworkGraph';
+import SankeyGraph from './components/SankeyGraph';
 
 function App() {
   const [graphType, setGraphType] = React.useState('NetworkGraph');
@@ -9,7 +9,7 @@ function App() {
   return (
       <div className="App">
         <NetworkGraph />
-        {/* <SankeyGraph /> */}
+         <SankeyGraph />
       </div>
   );
 }
