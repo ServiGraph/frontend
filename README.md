@@ -72,15 +72,6 @@ The backend service should return JSON data in the following format:
 ```
 ### No special hardware is needed other than ensuring backend service access.
 
-## Testing
-
-Run the test suite with:
-```bash
-npm test
-```
-
-This will execute all tests.
-
 ## Troubleshooting
 
 ### Common Issues
@@ -99,7 +90,6 @@ This will execute all tests.
 3. **If you see performance issues with large datasets**
     - Try selecting a shorter time period to reduce the amount of data
     - Consider adding filtering options on the backend
-
 
 ## External Dependencies
 
