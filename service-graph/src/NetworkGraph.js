@@ -37,38 +37,38 @@ const NetworkGraph = () => {
         try {
             console.log(fromTimestamp);
             // 🟡 Call your API here
-            // const response = await fetch(`http://127.0.0.1:8090/v1/fetchTraceData/${fromTimestamp}`);
-            // const json = await response.json();
+            const response = await fetch(`http://127.0.0.1:8090/v1/fetchTraceData/${fromTimestamp}`);
+            const json = await response.json();
 
-            const json = {
-                nodes: [
-                    { id: "Node A" },
-                    { id: "Node B" },
-                    { id: "Node C" },
-                    { id: "Node D" },
-                    { id: "Node E" },
-                    { id: "Node F" },
-                    { id: "Node G" },
-                    { id: "Node H" },
-                    { id: "Node I" },
-                    { id: "Node J" }
-                ],
-                links: [
-                    { source: "Node A", target: "Node B", weight: 3 },
-                    { source: "Node A", target: "Node C", weight: 5 },
-                    { source: "Node B", target: "Node D", weight: 2 },
-                    { source: "Node C", target: "Node D", weight: 4 },
-                    { source: "Node D", target: "Node E", weight: 1 },
-                    { source: "Node E", target: "Node F", weight: 6 },
-                    { source: "Node F", target: "Node G", weight: 2 },
-                    { source: "Node G", target: "Node H", weight: 3 },
-                    { source: "Node H", target: "Node I", weight: 7 },
-                    { source: "Node I", target: "Node J", weight: 1 },
-                    { source: "Node J", target: "Node A", weight: 2 },
-                    { source: "Node B", target: "Node H", weight: 4 },
-                    { source: "Node G", target: "Node F", weight: 4 }
-                ]
-            };
+            // const json = {
+            //     nodes: [
+            //         { id: "Node A" },
+            //         { id: "Node B" },
+            //         { id: "Node C" },
+            //         { id: "Node D" },
+            //         { id: "Node E" },
+            //         { id: "Node F" },
+            //         { id: "Node G" },
+            //         { id: "Node H" },
+            //         { id: "Node I" },
+            //         { id: "Node J" }
+            //     ],
+            //     links: [
+            //         { source: "Node A", target: "Node B", weight: 3 },
+            //         { source: "Node A", target: "Node C", weight: 5 },
+            //         { source: "Node B", target: "Node D", weight: 2 },
+            //         { source: "Node C", target: "Node D", weight: 4 },
+            //         { source: "Node D", target: "Node E", weight: 1 },
+            //         { source: "Node E", target: "Node F", weight: 6 },
+            //         { source: "Node F", target: "Node G", weight: 2 },
+            //         { source: "Node G", target: "Node H", weight: 3 },
+            //         { source: "Node H", target: "Node I", weight: 7 },
+            //         { source: "Node I", target: "Node J", weight: 1 },
+            //         { source: "Node J", target: "Node A", weight: 2 },
+            //         { source: "Node B", target: "Node H", weight: 4 },
+            //         { source: "Node G", target: "Node F", weight: 4 }
+            //     ]
+            // };
 
             // Inject default weights just for force layout
             json.links.forEach(link => {
